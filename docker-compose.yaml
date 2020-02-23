@@ -1,0 +1,16 @@
+version: "3.6"
+services:
+  rabbitmq:
+    container_name: newton_rabbitmq
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  mongo:
+    container_name: newton_mongo
+    image: mongo:3.6.16
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
