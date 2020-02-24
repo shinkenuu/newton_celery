@@ -8,13 +8,14 @@ from marshmallow import ValidationError
 from app import mongo
 from constants import CALCULATION_STATUS_ENQUEUED
 from schemas import CalculationSchema
-from tasks.arithmetic import calculate
 
 
 class CalculationListResource(Resource):
     schema = CalculationSchema()
 
     def post(self):
+        from tasks.arithmetic import calculate  # TODO: toplevel import is breaking
+
         try:
             calculation = self.schema.load(request.json)
             calculation['result'] = None

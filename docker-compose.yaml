@@ -1,7 +1,40 @@
 version: "3.6"
 services:
+  web:
+    container_name: newton_celery_web
+    build: .
+    depends_on:
+      - rabbitmq
+      - mongo
+    ports:
+      - "5000:5000"
+    environment:
+      WEB_HOST: web
+      WEB_PORT: 5000
+      MONGO_URI: "mongodb://mongo:27017/newton"
+      CELERY_BROKER_URL: "pyamqp://guest:guest@rabbitmq:5672"
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      MONGO_HOST: mongo
+      MONGO_PORT: 27017
+    command: ['/bin/sh', '-c', './run-web.sh']
+
+  worker:
+    container_name: newton_celery_worker
+    build: .
+    depends_on:
+      - rabbitmq
+      - mongo
+    environment:
+      MONGO_URI: "mongodb://mongo:27017/newton"
+      CELERY_BROKER_URL: "pyamqp://guest:guest@rabbitmq:5672"
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      MONGO_HOST: mongo
+      MONGO_PORT: 27017
+
   rabbitmq:
-    container_name: newton_rabbitmq
+    container_name: newton_celery_rabbitmq
     image: rabbitmq:3-management
     restart: unless-stopped
     ports:
@@ -9,7 +42,7 @@ services:
       - "15672:15672"
 
   mongo:
-    container_name: newton_mongo
+    container_name: newton_celery_mongo
     image: mongo:3.6.16
     restart: unless-stopped
     ports:
